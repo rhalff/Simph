@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* Config for SimplePages
+* Config for Simph
 *
 * Mainly for site-wide html adjustments
 *
@@ -14,7 +14,7 @@ $CONFIG['locale'] = 'UTF-8';
 $CONFIG['javascripts'] = array(
 
         // jquery & ui support : http://jquery.com/
-		'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+        'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
         'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js',
 
         // mootools support : http://mootools.net/

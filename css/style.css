@@ -84,3 +84,47 @@ div.footer {
     border-top: 2px solid white;
     text-align: center;
 }
+
+#commits {
+
+}
+
+#commits .feed_entry {
+margin-top: 1em;
+border-top: 1px dashed white;
+
+}
+
+#commits .feed_entry img {
+float: left;
+margin: 0 0.3em 0 0;
+}
+
+#commits .feed_entry h3 {
+
+}
+
+#commits .feed_entry a {
+ color: white;
+}
+
+#commits .updated {
+display: none;
+}
+
+#commits .gravatar {
+display: none;
+}
+
+#commits .author {
+display: none;
+}
+
+#commits .content {
+border-left: 5px solid silver;
+border-top: 1px solid silver;
+border-bottom: 1px solid silver;
+padding-left: 1em;
+margin: 0.5em 0 0.5em 0;
+
+}

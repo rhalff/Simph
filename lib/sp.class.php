@@ -17,7 +17,10 @@ class Simph {
         private $pages = array();
         private $url = '';
         private $config = array(
-                        'javascripts'=>array()
+                        'locale'=> 'UTF8',
+                        'javascripts'=>array(),
+                        'stylesheets'=>array(),
+                        'widgets'=> array()
                         );
 
         function __construct($config = false)
@@ -26,7 +29,7 @@ class Simph {
                 $this->_load();
         }
 
-        function run()
+        public function run()
         {
 
                 if(!isset($this->pages[$this->url])) {
@@ -40,13 +43,25 @@ class Simph {
                 $this->addEncoding($doc);
                 $this->addClassTo($doc, 'body', $this->urlify($this->url));
 
-
                 // export desired system vars to the widgets
                 $vars = array(
                                 'url'=>$this->url,
                                 'pages'=>$this->pages
                              );
 
+                $this->attachWidgets($doc, $vars);
+                $content = $this->placeWidgets($doc->saveXML(), $vars);
+
+                $this->serve($content);
+        }
+
+        private function serve($content)
+        {
+                print($content);
+        }
+
+        private function attachWidgets($doc, $vars)
+        {
                 // insert the tag
                 foreach($this->config['widgets'] as $location=>$widget) {
                         foreach($widget as $name=>$value) {
@@ -56,22 +71,6 @@ class Simph {
                                 }
                         }
                 }
-
-                $content = $doc->saveXML();
-
-                preg_match_all("/{(\w+)}/", $content, $matches);
-                $tags = !empty($matches) ? $matches[1] : array();
-                $s = $r = array();
-
-                // 2 ways, add with a tag {MENU}
-                // or automatic addition based on what is specified in the config
-                foreach($tags as $widget) {
-                        $r[] = new SimphWidget($widget, $vars);
-                        $s[] = '{'.strtoupper($widget).'}';
-                }
-
-
-                print(str_replace($s, $r, $doc->saveXML()));
         }
 
         /**
@@ -94,6 +93,26 @@ class Simph {
                         // append is the default
                         $el->appendChild($doc->createTextNode('{'.strtoupper($name).'}'));
                 }
+        }
+
+        private function placeWidgets($content, $vars)
+        {
+
+                preg_match_all("/{(\w+)}/", $content, $matches);
+
+                $tags = !empty($matches) ? $matches[1] : array();
+
+                $s = $r = array();
+
+                // 2 ways, add with a tag {MENU}
+                // or automatic addition based on what is specified in the config
+                foreach($tags as $widget) {
+                        $r[] = new SimphWidget($widget, $vars);
+                        $s[] = '{'.strtoupper($widget).'}';
+                }
+
+                return str_replace($s, $r, $content);
+
         }
 
         private function addBase($doc)
@@ -212,12 +231,12 @@ class Simph {
                 $this->url = isset($_REQUEST['url']) ? $_REQUEST['url'] : $k[0];
         }
 
-        function urlify($title)
+        private function urlify($title)
         {
                 return preg_replace("/\W+/", "-", $title);
         }
 
-        function getTagValue($d, $tagName)
+        private function getTagValue($d, $tagName)
         {
                 if($title = $d->getElementsByTagName($tagName)->item(0)->firstChild->wholeText) {
                         return $title; 
@@ -232,7 +251,7 @@ class Simph {
          * Add charset the HTML5 way
          *
          */
-        function addEncoding($d)
+        private function addEncoding($d)
         {
                 $encoding = isset($this->config['LOCALE']) ? $this->config['LOCALE'] : 'UTF-8';
                 $meta = $d->createElement('meta');
@@ -240,7 +259,7 @@ class Simph {
                 $this->insertAfterTitle($d, $meta);
         }
 
-        function getMeta($d, $name)
+        private function getMeta($d, $name)
         {
                 $metas = $d->getElementsByTagName('meta');
                 foreach($metas as $meta) {
@@ -256,7 +275,7 @@ class Simph {
          * Weird domDocument->getElementById() doesn't seem to work
          *
          */
-        function getElementById($doc, $id)
+        private function getElementById($doc, $id)
         {
                 $xpath = new DOMXPath($doc);
                 return $xpath->query("//*[@id='$id']")->item(0);

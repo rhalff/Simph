@@ -1,10 +1,12 @@
-= Simph
+Simph
+=====
 
 Is intended for small sites where a CMS is overkill.
 
 It provides ѕome functions to avoid redundancy inside the different html pages.
 
-== HTML Pages ==
+HTML Pages
+----------
 
 The basic pages of the site can be made in html. No php is allowed inside these pages.
 You can however inject or place output from the widgets inside the page.
@@ -26,9 +28,8 @@ What Simph provides:
  
 
 CONFIG:
+-------
 
-You can use 'except' or 'only' on any variable in the config, to exclude it that options from a certain page.
+You can use 'except' or 'only' on any variable in the config to only target certain pages.
+
 This goes for stylesheets, javascripts and widgets.
-
-
-This is work in progress (I don't even use it yet...)

@@ -3,12 +3,6 @@
  *
  * Simph
  *
- * Features:
- *
- *  - Full SEO!
- *  - Add your own keywords to every page
- *  - Ability to give everypage a full description
- *
  */
 require_once 'lib/sp.widget.class.php';
 
@@ -165,18 +159,23 @@ class Simph {
         }
 
         /**
-         * @param DOMNode $newnode Node to insert next to $ref
-         * @param DOMNode $ref Reference node
-         * @requires $ref has a parent node
-         * @return DOMNode the real node inserted
+         * @param DOMDocument $doc The DomDocument
+         * @param DOMNode $newnode The new node to append after the title
+         * @return void
          */
-        private function insertAfterTitle($doc, DOMNode $newnode)
+        private function insertAfterTitle(DOMDocument $doc, DOMNode $newnode)
         {
                 $title = $doc->getElementsByTagName('title')->item(0);
                 $this->addSibling($doc, $newnode, $title);
         } 
 
-        private function addSibling($doc, $newnode, $node)
+        /**
+         * @param DOMDocument $doc The DomDocument
+         * @param DOMNode $newnode The new node
+         * @param DOMNode $node The node to append to
+         * @return void
+         */
+        private function addSibling(DOMDocument $doc, DOMNode $newnode, DOMNode $node)
         {
                 if ($node->nextSibling) {
                         return $node->parentNode->insertBefore($newnode, $node->nextSibling);
@@ -185,7 +184,13 @@ class Simph {
                 }
         }
 
-        private function addStyle($doc, $href, $media = 'screen')
+        /**
+         * @param DOMDocument $doc The DomDocument
+         * @param String $href The url
+         * @param String $media The media type
+         * @return void
+         */
+        private function addStyle(DOMDocument $doc, $href, $media = 'screen')
         {
                 $base = $doc->createElement('link');
                 $base->setAttribute('rel', 'stylesheet');

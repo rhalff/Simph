@@ -11,7 +11,6 @@
 */
 class SimphWidget{
 
-        public $vars = array();
         private $ret = ""; 
 
         function __construct($widget, $vars)

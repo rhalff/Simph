@@ -50,6 +50,7 @@ class Simph {
                              );
 
                 $this->attachWidgets($doc, $vars);
+
                 $content = $this->placeWidgets($doc->saveXML(), $vars);
 
                 $this->serve($content);
@@ -88,7 +89,7 @@ class Simph {
                 }
 
                 if(isset($options['pos']) && $options['pos'] == 'prepend') {
-                        $this->addSibling($doc, $doc->createTextNode('{'.strtoupper($name).'}'), $el);
+                        $this->prependChild($doc, $doc->createTextNode('{'.strtoupper($name).'}'), $el);
                 } else {
                         // append is the default
                         $el->appendChild($doc->createTextNode('{'.strtoupper($name).'}'));
@@ -230,6 +231,22 @@ class Simph {
                         return $node->parentNode->appendChild($newnode);
                 }
         }
+
+        /**
+         * @param DOMDocument $doc The DomDocument
+         * @param DOMNode $newnode The new node
+         * @param DOMNode $node The node to prepend after
+         * @return void
+         */
+        private function prependChild(DOMDocument $doc, DOMNode $newnode, DOMNode $node)
+        {
+                if ($node->firstChild) {
+                        return $node->insertBefore($newnode, $node->firstChild);
+                } else {
+                        return $node->appendChild($newnode);
+                }
+        }
+
 
         /**
          * @param DOMDocument $doc The DomDocument

@@ -11,7 +11,9 @@ class Simph {
         private $pages = array();
         private $url = '';
         private $config = array(
-                        'locale'=> 'UTF8',
+                        'locale'=> 'UTF8'
+                        );
+        private $inject = array(
                         'javascripts'=>array(),
                         'stylesheets'=>array(),
                         'widgets'=> array()
@@ -23,19 +25,23 @@ class Simph {
                 $this->_load();
         }
 
+        public function inject($inject)
+        {
+                $this->inject = $inject;
+        }
+
         public function run()
         {
 
-                if(!isset($this->pages[$this->url])) {
-                        throw new Exception("Page not found");
-                }
+                if(!isset($this->pages[$this->url])) throw new Exception("Page not found");
+
                 $doc = $this->pages[$this->url]['document'];
 
-                $this->addJavascripts($doc, $this->config['javascripts']);
-                $this->addStylesheets($doc, $this->config['stylesheets']);
+                $this->addJavascripts($doc, $this->inject['javascripts']);
+                $this->addStylesheets($doc, $this->inject['stylesheets']);
                 $this->addBase($doc);
                 $this->addEncoding($doc);
-                $this->addClassTo($doc, 'body', $this->urlify($this->url));
+                $this->addAttribTo($doc, 'body', 'id', 'page-' . strtolower($this->urlify($this->url)));
 
                 // export desired system vars to the widgets
                 $vars = array(
@@ -57,7 +63,7 @@ class Simph {
         private function attachWidgets($doc, $vars)
         {
                 // insert the tag
-                foreach($this->config['widgets'] as $location=>$widget) {
+                foreach($this->inject['widgets'] as $location=>$widget) {
                         foreach($widget as $name=>$value) {
                                 list($name, $options) = $this->readOption($name, $value);
                                 if(!$this->excluded($options)) {
@@ -89,6 +95,11 @@ class Simph {
                 }
         }
 
+        /**
+         *
+         * Replaces the {WIDGET} tags with the content of the widget.
+         *
+         */
         private function placeWidgets($content, $vars)
         {
 
@@ -109,6 +120,13 @@ class Simph {
 
         }
 
+        /**
+         *
+         * Adds the base element to the html document.
+         *
+         * NOTE: This is only necessary if Simph is installed in a subdir of the document root
+         *
+         */
         private function addBase($doc)
         {
                 $base = $doc->createElement('base');
@@ -116,6 +134,13 @@ class Simph {
                 $this->insertAfterTitle($doc, $base);
         }
 
+        /**
+         *
+         * Add javascripts specified in the config to the document.
+         *
+         * Will consider excluded and only options for the current url.
+         *
+         */
         private function addJavascripts($doc, $scripts)
         {
                 $scripts = array_reverse($scripts);
@@ -131,6 +156,13 @@ class Simph {
                 }
         }
 
+        /**
+         *
+         * Add stylesheets specified in the config to the document.
+         *
+         * Will consider excluded and only options for the current url.
+         *
+         */
         private function addStylesheets($doc, $scripts)
         {
                 $scripts = array_reverse($scripts);
@@ -142,19 +174,34 @@ class Simph {
                 }
         }
 
-        private function addClassTo($doc, $id, $className) 
+        /**
+         *
+         * Will globally add a className to an element. 
+         *
+         * If $id is precided with an '#' will be considered to be an id 
+         * else it will be a normal element. (e.g. body)
+         *
+         */
+        private function addAttribTo($doc, $tag, $attr, $value) 
         {
-                if(substr($id,0,1) == '#') {
-                        $tag = $this->getElementById($doc, substr($id, 1));
+                if(substr($tag,0,1) == '#') {
+                        $el = $this->getElementById($doc, substr($tag, 1));
                 } else {
-                        $tag =  $doc->getElementsByTagname($id)->item(0);
+                        $el =  $doc->getElementsByTagname($tag)->item(0);
                 }
-                if($tag) {
-                        $classes = explode(' ', $tag->getAttribute('class'));
-                        if(!in_array($className, $classes)) $classes[] = $className;
-                        $tag->setAttribute("class", implode($classes, ' '));
+                if($el) {
+                        if($attr == 'class') {
+                                $classes = array();
+                                $classString = $el->getAttribute('class');
+                                if($classString != "") $classes = explode(' ', $classString);
+                                if(!in_array($className, $classes)) $classes[] = $className;
+                                $el->setAttribute("class", implode(' ', $classes));
+                        } else {
+                                $el->setAttribute($attr, $value);
+                        }
+
                 } else {
-                        throw new Exception("Tag not found");
+                        throw new Exception("Element not found");
                 }
         }
 

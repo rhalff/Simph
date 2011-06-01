@@ -11,7 +11,7 @@ $CONFIG = array();
 $CONFIG['locale'] = 'UTF-8';
 
 // Define site-wide javascripts (will appear on all pages)
-$CONFIG['javascripts'] = array(
+$INJECT['javascripts'] = array(
 
         // jquery & ui support : http://jquery.com/
         'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
@@ -37,7 +37,7 @@ $CONFIG['javascripts'] = array(
 		);
 
 // Define site-wide stylesheets (will appear on all pages)
-$CONFIG['stylesheets'] = array(
+$INJECT['stylesheets'] = array(
 
         // jquery ui specific styles
         'http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css',
@@ -58,9 +58,9 @@ $CONFIG['stylesheets'] = array(
 * The form is: $CONFIG['widgets'][<tagName or id>][<widget name>] = <option array>
 *
 */
-$CONFIG['widgets'] = array();
-$CONFIG['widgets']['body'] = array('footer');
-$CONFIG['widgets']['#content']['menu']   = array('pos'=>'prepend');
-$CONFIG['widgets']['#content']['footer'] = array('only'=>array('test-page'));
+$INJECT['widgets'] = array();
+$INJECT['widgets']['body'] = array('footer');
+$INJECT['widgets']['#content']['menu']   = array('pos'=>'prepend');
+$INJECT['widgets']['#content']['footer'] = array('only'=>array('test-page'));
 
 ?>

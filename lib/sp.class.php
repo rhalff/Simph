@@ -104,7 +104,7 @@ class Simph {
         private function placeWidgets($content, $vars)
         {
 
-                preg_match_all("/{(\w+)}/", $content, $matches);
+                preg_match_all("/{(.*?)}/", $content, $matches);
 
                 $tags = !empty($matches) ? $matches[1] : array();
 
@@ -112,12 +112,53 @@ class Simph {
 
                 // 2 ways, add with a tag {MENU}
                 // or automatic addition based on what is specified in the config
-                foreach($tags as $widget) {
+                foreach($tags as $tag) {
+                        list($widget, $params) = $this->parseWidgetTag($tag);
+                        $vars = array_merge($vars, $params);
+
                         $r[] = new SimphWidget($widget, $vars);
-                        $s[] = '{'.strtoupper($widget).'}';
+                        $s[] = '{'.$tag.'}';
                 }
 
                 return str_replace($s, $r, $content);
+
+        }
+
+        /**
+         *
+         * Parses the widget tag into a widget name part and a parameter part (if any)
+         *
+         * e.g.
+         *
+         *  {RSS|url=http://www.example.com/my.rss}
+         * 
+         *  becomes:
+         *
+         *  array(
+         *    'RSS',
+         *    array(
+         *      'url'=>'http://www.example.com/my.rss'
+         *    )
+         *  )
+         *
+         *
+         */
+        private function parseWidgetTag($widget)
+        {
+
+                $d = explode('|', $widget);
+                if(count($d) === 1) return array($d[0], array());
+                if(count($d) > 1) {
+                        // todo: support multiple..
+                        $vars = array_slice($d, 1);
+                        $params = array();
+                        foreach($vars as $var) {
+                                list($k,$v) = explode('=', $var, 2); // TODO: check if 2 is always correct
+                                $params[$k]=$v; 
+                        }
+                        
+                        return array($d[0], $params);
+                } 
 
         }
 
